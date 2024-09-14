@@ -1,0 +1,205 @@
+//Data Loading and Preprocessing
+///The dataset is loaded from a CSV file named Iris (1).csv. The preprocessing steps involve removing the 'Id' column, as it does not contribute to the model's ability to learn the classification task. Additionally, the categorical 'Species' column is encoded into numerical form, enabling the machine learning algorithms to process the labels.
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# Load the dataset directly as it is in the current working directory
+iris_data = pd.read_csv('Iris (1).csv')
+
+# Drop the 'Id' column as it's not needed for modeling
+iris_data.drop('Id', axis=1, inplace=True)
+
+# Encode the 'Species' column
+le = LabelEncoder()
+iris_data['Species'] = le.fit_transform(iris_data['Species'])
+
+# Split the dataset into features (X) and the target variable (y)
+X = iris_data.drop('Species', axis=1)
+y = iris_data['Species']
+
+# Split the dataset into training (70%) and testing (30%) sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+
+
+
+
+
+
+
+
+//Model Selection and Training
+
+from sklearn.neighbors import KNeighborsClassifier
+
+# Initialize the k-NN classifier with k=3
+knn = KNeighborsClassifier(n_neighbors=3)
+
+# Train the classifier on the training data
+knn.fit(X_train, y_train)
+
+# Predict on the test data
+y_pred = knn.predict(X_test)
+
+
+
+
+
+
+//Model Evaluation
+//To assess the performance of our k-Nearest Neighbors model, we employ several metrics: accuracy, the confusion matrix, and the classification report.
+
+//Accuracy measures the proportion of correct predictions over the total number of instances evaluated.
+//The confusion matrix provides insight into the types of errors made by the classifier.
+//The classification report shows key metrics such as precision, recall, and f1-score, offering a more detailed view of the model's performance across the different classes.
+
+
+
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import LabelEncoder
+
+# Load the Iris dataset
+data = load_iris()
+X = data.data
+y = data.target
+
+# Optionally encode labels if necessary (here it's not needed as y is already encoded)
+le = LabelEncoder()
+y = le.fit_transform(y)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Initialize the model
+model = DecisionTreeClassifier(random_state=42)
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Generate predictions
+y_pred = model.predict(X_test)
+
+# Calculate the accuracy
+accuracy = accuracy_score(y_test, y_pred)
+
+# Generate a classification report
+class_report = classification_report(y_test, y_pred, target_names=data.target_names)
+
+# Create a confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+# Print out the results
+print(f"Accuracy: {accuracy * 100:.2f}%")
+print("\nClassification Report:\n", class_report)
+print("\nConfusion Matrix:\n", conf_matrix)
+
+Accuracy: 100.00%
+
+Classification Report:
+               precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       1.00      1.00      1.00        13
+   virginica       1.00      1.00      1.00        13
+
+    accuracy                           1.00        45
+   macro avg       1.00      1.00      1.00        45
+weighted avg       1.00      1.00      1.00        45
+
+
+Confusion Matrix:
+ [[19  0  0]
+ [ 0 13  0]
+ [ 0  0 13]]
+
+
+
+
+
+
+
+//Cross-Validation
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import cross_val_score
+
+# Using the k-NN model as an example
+knn_cv = KNeighborsClassifier(n_neighbors=3)
+
+# 10-fold cross-validation
+cv_scores = cross_val_score(knn_cv, X, y, cv=10)
+
+print(f"CV Scores: {cv_scores}")
+print(f"CV Average Score: {cv_scores.mean():.4f}")
+
+
+CV Scores: [1.         0.93333333 1.         0.93333333 0.86666667 1.
+ 0.93333333 1.         1.         1.        ]
+CV Average Score: 0.9667
+
+
+
+
+
+//Model Comparison
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+# Initialize the models
+models = {
+    "k-NN": KNeighborsClassifier(n_neighbors=3),
+    "Decision Tree": DecisionTreeClassifier(),
+    "SVM": SVC(),
+    "Random Forest": RandomForestClassifier()
+}
+
+# Compare models using cross-validation
+for name, model in models.items():
+    cv_scores = cross_val_score(model, X, y, cv=10)
+    print(f"{name} Accuracy: {cv_scores.mean():.4f}")
+
+
+k-NN Accuracy: 0.9667
+Decision Tree Accuracy: 0.9600
+SVM Accuracy: 0.9733
+Random Forest Accuracy: 0.9600
+
+
+
+
+
+
+//Hyperparameter Tuning
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+
+# Load a dataset (e.g., Iris dataset)
+data = load_iris()
+X = data.data  # Feature matrix
+y = data.target  # Target vector
+
+# Grid search for k-NN
+param_grid = {'n_neighbors': np.arange(1, 30)}
+knn_gs = GridSearchCV(KNeighborsClassifier(), param_grid, cv=10)
+knn_gs.fit(X, y)
+
+print(f"Best parameters: {knn_gs.best_params_}")
+print(f"Best score: {knn_gs.best_score_:.4f}")
+
+Best parameters: {'n_neighbors': 13}
+Best score: 0.9800
+
+
+
